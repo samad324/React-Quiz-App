@@ -1,0 +1,15 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #222;
+  height: 64px;
+  padding: 20px;
+  color: white;
+}
+.loginForm{
+  height: 400px;
+  border: 2px solid #222;
+  border-radius: 8px;
+} 
