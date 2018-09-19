@@ -23,7 +23,11 @@ const checkUser = () => {
     return new Promise((resolve, reject) => {
         auth.onAuthStateChanged((user) => {
             if (user) {
-                resolve(user)
+                firestore.collection('users')
+                    .doc(user.uid)
+                        .get().then(userData => {
+                            resolve({user , userData : userData.data()})
+                        })
             } else {
                 reject("no user!")
             }
@@ -88,4 +92,32 @@ const getQuiz = (quizName, no) => {
 }
 
 
-export default { login, register, checkUser, getQuiz }
+const saveQuiz = (userId, quizInfo) => {
+    let title = quizInfo.title.replace(/ /g, '')
+    title = title.toLowerCase()
+    return new Promise((resolve, reject) => {
+        firestore.collection('users')
+            .doc(userId)
+            .get().then((res) => {
+                let quizes = res.data().quizes || {};
+                quizes[title] = {
+                    quizTitle: quizInfo.title,
+                    mark: quizInfo.mark,
+                    total : quizInfo.total
+                }
+                firestore.collection('users')
+                    .doc(userId).update({
+                        quizes: quizes
+                    }).then((res) => {
+                        resolve(res)
+                    }).catch(err => {
+                        reject(err)
+                    })
+
+            }).catch(err => {
+                reject(err)
+            })
+    })
+}
+
+export default { login, register, checkUser, getQuiz , saveQuiz}
